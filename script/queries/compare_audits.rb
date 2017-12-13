@@ -64,7 +64,7 @@ CSV.foreach("congressional_audit.csv", headers: true) do |row|
   h_row.merge!(:pre_amt_tot => premium_total_amount(h_row["Premium Total"]))
   hbx_row = [h_row, row.fields]
   hbx_rows << hbx_row
-  hbx_search_hash[h_row.to_hash["SubscriberID"]] = hbx_search_hash[h_row.to_hash["SubscriberID"]] + [hbx_row] 
+  hbx_search_hash[h_row.to_hash["Subscriber ID"]] = hbx_search_hash[h_row.to_hash["Subscriber ID"]] + [hbx_row] 
 end
 
 CSV.foreach("CongressAudit.csv", headers: true) do |row|
@@ -90,7 +90,7 @@ end
 
 CSV.open("hbx_only.csv", "w") do |csv|
   hbx_rows.each do |hbx_row|
-    searchable_rows = nfp_search_hash[hbx_row.first["SubscriberID"]]
+    searchable_rows = nfp_search_hash[hbx_row.first["Subscriber ID"]]
     unless (searchable_rows.any? { |n_row| match_row?(n_row.first, hbx_row.first) })
       csv << hbx_row.last
     end
