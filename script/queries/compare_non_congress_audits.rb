@@ -71,7 +71,7 @@ CSV.foreach("non_congressional_audit.csv", headers: true) do |row|
   hbx_search_hash[h_row.to_hash["Subscriber ID"]] = hbx_search_hash[h_row.to_hash["Subscriber ID"]] + [hbx_row] 
 end
 
-CSV.foreach("NonCongressAudit.csv", headers: true, :encoding => 'windows-1251:utf-8' ) do |row|
+CSV.foreach("NonCongressAudit.csv", headers: true, :encoding => 'windows-1251:utf-8') do |row|
   data = row.to_hash
   if !is_cancel_garbage?(data)
     h_row = row.to_hash
