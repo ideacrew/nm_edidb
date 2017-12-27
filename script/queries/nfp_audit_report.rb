@@ -30,7 +30,7 @@ pols = Policy.where({
     :enrollees => {"$elemMatch" => {
           :rel_code => "self",
           :coverage_start => {"$gt" => Date.new(2014,12,31)}
-    }}, :employer_id => { "$in" => emp_ids } })
+    }}, :employer_id => { "$in" => emp_ids } }).no_timeout
 
 Caches::MongoidCache.allocate(Plan)
 Caches::MongoidCache.allocate(Carrier)
