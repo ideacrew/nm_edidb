@@ -49,6 +49,8 @@ CSV.open("congressional_audit.csv", "w") do |csv|
       end_date = Date.new(2015,12,31)
       if sub.coverage_start.year == 2015 and sub.coverage_end == nil
         sub.coverage_end = end_date
+      elsif (sub.coverage_start.year > 2015 && sub.coverage_start.year < Date.today.year) and sub.coverage_end == nil
+        sub.coverage_end = sub.coverage_start.end_of_year
       end
       s_person = pol.subscriber.person
       s_am = s_person.authority_member
