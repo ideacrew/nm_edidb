@@ -64,10 +64,6 @@ module ExternalEvents
       end
     end
 
-    def kind
-      kind = Maybe.new(@policy_node)
-    end
-
     def extract_other_financials
       p_enrollment = Maybe.new(@policy_node).policy_enrollment.value
       return({}) if p_enrollment.blank?
