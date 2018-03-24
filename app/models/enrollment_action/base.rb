@@ -5,6 +5,7 @@ module EnrollmentAction
     attr_reader :errors
 
     def initialize(term, init)
+      byebug
       @termination = term
       @action = init
       @errors = ActiveModel::Errors.new(self)
@@ -41,7 +42,7 @@ module EnrollmentAction
         ::EnrollmentAction::Termination,
         ::EnrollmentAction::ReselectionOfExistingCoverage
       ].detect { |kls| kls.qualifies?(chunk) }
-      
+
       if selected_action
         puts selected_action.inspect
         selected_action.construct(chunk)
@@ -60,7 +61,7 @@ module EnrollmentAction
       self.new(term, action)
     end
 
-    # Check if an enrollment already exists - if it does and you don't want to send out a new transaction, call this method. 
+    # Check if an enrollment already exists - if it does and you don't want to send out a new transaction, call this method.
     def check_already_exists
       if @action && action.existing_policy
         errors.add(:action, "enrollment already exists")
