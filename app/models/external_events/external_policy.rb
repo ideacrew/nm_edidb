@@ -2,7 +2,7 @@ module ExternalEvents
   class ExternalPolicy
     attr_reader :policy_node
     attr_reader :plan
-    attr_reader :enrollment_event
+    attr_reader :kind
 
     include Handlers::EnrollmentEventXmlHelper
 
