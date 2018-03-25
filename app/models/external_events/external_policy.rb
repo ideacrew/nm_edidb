@@ -8,20 +8,13 @@ module ExternalEvents
 
     # p_node : Openhbx::Cv2::Policy
     # p_record : Plan
-    def initialize(p_node, p_record, cobra_reinstate = false)
+    # optional parsing options to pass in additional parsed parameters to populate fields of policy
+    # upon creation and persistance.
+    def initialize(p_node, p_record, cobra_reinstate = false, **parsing_options)
       @policy_node = p_node
       @plan = p_record
       @cobra = cobra_reinstate
-    end
-
-    # overload constructor to be able to populate the kind attibute on new policies with the parsed market field in the
-    # payload and store in the kind field in the policy model
-    # kind : uses Openhbx::Cv2::Enrollment and then the kind method in ::ExternalEvents::ExternalEventNotification
-    def initialize(p_node, p_record, kind = nil, cobra_reinstate = false)
-      @policy_node = p_node
-      @plan = p_record
-      @cobra = cobra_reinstate
-      @kind = kind
+      @kind = parsing_options[:market_from_payload]
     end
 
     def extract_pre_amt_tot

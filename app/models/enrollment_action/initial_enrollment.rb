@@ -19,7 +19,7 @@ module EnrollmentAction
         return false
       end
       byebug
-      ep = ExternalEvents::ExternalPolicy.new(action.policy_cv, action.existing_plan, action.kind, action.is_cobra?)
+      ep = ExternalEvents::ExternalPolicy.new(action.policy_cv, action.existing_plan, action.is_cobra?, market_from_payload: action.kind)
       ep.persist
     end
 
