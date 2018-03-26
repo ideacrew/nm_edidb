@@ -47,10 +47,6 @@ describe EnrollmentAction::InitialEnrollment, "with an initial enrollment event,
     expect(subject.persist).to be_truthy
   end
 
-  it "receives the parsed value from the market element in the payload" do
-    expect(subject.action.kind.market).to eq("coverall")
-  end
-
 end
 
 describe EnrollmentAction::InitialEnrollment, "with an initial enrollment event, being published" do
