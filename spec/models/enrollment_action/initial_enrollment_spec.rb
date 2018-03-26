@@ -18,7 +18,6 @@ end
 describe EnrollmentAction::InitialEnrollment, "with an initial enrollment event, being persisted" do
   let(:member_from_xml) { instance_double(Openhbx::Cv2::EnrolleeMember) }
   let(:enrollee) { instance_double(::Openhbx::Cv2::Enrollee, :member => member_from_xml) }
-  let(:enrollment) { instance_double(::Openhbx::Cv2::Enrollment, :market => "coverall") }
   let(:enrollees) { [enrollee] }
   let(:policy_cv) { instance_double(Openhbx::Cv2::Policy,:enrollees => enrollees) }
   let(:enrollment_event) { instance_double(
