@@ -5,7 +5,6 @@ module EnrollmentAction
     attr_reader :errors
 
     def initialize(term, init)
-      byebug
       @termination = term
       @action = init
       @errors = ActiveModel::Errors.new(self)

@@ -18,7 +18,6 @@ module EnrollmentAction
       unless members_persisted.all?
         return false
       end
-      byebug
       ep = ExternalEvents::ExternalPolicy.new(action.policy_cv, action.existing_plan, action.is_cobra?, market_from_payload: action.kind)
       ep.persist
     end
