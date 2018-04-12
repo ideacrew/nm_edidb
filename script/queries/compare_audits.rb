@@ -1,4 +1,5 @@
 require 'csv'
+require 'json'
 
 only_nfp = []
 only_hbx = []
@@ -15,13 +16,35 @@ def premium_total_amount(pre_amt)
 end
 
 def match_row?(nfp_row, hbx_row)
-  # normalize the keys by removing spaces so keys match
-  hbx_row.keys.each do |k|
-    next if k.is_a? Symbol
-    hbx_row[k.gsub(' ', '')] = hbx_row[k]
-    hbx_row.delete(k)
-  end
-  nfp_row == hbx_row
+  n_s_id = nfp_row["SubscriberID"]
+  n_m_id = nfp_row["MemberID"]
+#  n_eg_id = nfp_row["PolicyID"]
+  n_hios_id = nfp_row["HIOSID"]
+  n_ssn = nfp_row["SSN"]
+  n_pre_tot = nfp_row[:pre_amt_tot]
+  n_fein = nfp_row["EmployerFEIN"]
+  h_s_id = hbx_row["Subscriber ID"]
+  h_m_id = hbx_row["Member ID"]
+#  h_eg_id = hbx_row["Policy ID"]
+  h_hios_id = hbx_row["HIOS ID"]
+  h_ssn = hbx_row["SSN"]
+  n_cs = nfp_row['CoverageStart']
+  n_ce = nfp_row['CoverageEnd']
+  h_cs = hbx_row['Coverage Start']
+  h_ce = hbx_row['Coverage End']
+  h_pre_tot = hbx_row[:pre_amt_tot]
+  h_fein = hbx_row["Employer FEIN"]
+  (
+    (n_s_id == h_s_id) &&
+    (n_m_id == h_m_id) &&
+#    (n_eg_id == h_eg_id) &&
+    (n_hios_id == h_hios_id) &&
+#    (n_ssn == h_ssn) &&
+    (n_pre_tot == h_pre_tot) &&
+    (n_fein == h_fein) &&
+    (n_cs == h_cs) &&
+    (n_ce == h_ce)
+  )
 end
 
 def is_cancel_garbage?(nfp_row)
