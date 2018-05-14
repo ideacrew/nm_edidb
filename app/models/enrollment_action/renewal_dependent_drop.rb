@@ -1,7 +1,7 @@
 module EnrollmentAction
   class RenewalDependentDrop < Base
     extend RenewalComparisonHelper
-    
+
     attr_accessor :terminated_policy_information
 
     def self.qualifies?(chunk)
@@ -37,7 +37,7 @@ module EnrollmentAction
       unless members_persisted.all?
         return false
       end
-      ep = ExternalEvents::ExternalPolicy.new(action.policy_cv, action.existing_plan, action.is_cobra?)
+      ep = ExternalEvents::ExternalPolicy.new(action.policy_cv, action.existing_plan, action.is_cobra?, market_from_payload: action.kind)
       ep.persist
     end
 
