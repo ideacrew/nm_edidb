@@ -167,7 +167,7 @@ describe EnrollmentAction::ActiveRenewal, "#persist" do
   before :each do
     allow(ExternalEvents::ExternalMember).to receive(:new).with(member).and_return(db_record)
     allow(ExternalEvents::ExternalPolicy).to receive(:new).with(policy_cv, plan, false, market_from_payload: subject.action).and_return(policy_updater)
-    allow(subject.action).to receive(:kind).and_return( instance_double(ExternalEvents::EnrollmentEventNotification))
+    allow(subject.action).to receive(:kind).and_return(action)
     allow(policy_updater).to receive(:persist).and_return(true)
   end
 

@@ -121,12 +121,13 @@ describe EnrollmentAction::PlanChangeDependentDrop, "given a valid enrollment se
     allow(ExternalEvents::ExternalMember).to receive(:new).with(primary_member).and_return(db_record)
     allow(ExternalEvents::ExternalMember).to receive(:new).with(secondary_member).and_return(db_record)
     allow(ExternalEvents::ExternalMember).to receive(:new).with(dropped_member).and_return(db_record)
-    allow(ExternalEvents::ExternalPolicy).to receive(:new).with(new_policy_cv, plan, false).and_return(policy_updater)
+    allow(ExternalEvents::ExternalPolicy).to receive(:new).with(new_policy_cv, plan, false, market_from_payload: subject.action).and_return(policy_updater)
     allow(policy_updater).to receive(:persist).and_return(true)
     allow(termination_event).to receive(:subscriber_end).and_return(false)
     allow(termination_event.existing_policy).to receive(:terminate_as_of).and_return(true)
     allow(subject.action).to receive(:existing_policy).and_return(false)
     allow(subject).to receive(:select_termination_date).and_return(expected_termination_date)
+    allow(subject.action).to receive(:kind).and_return(dependent_drop_event)
   end
 
   it "persists when all members persist" do

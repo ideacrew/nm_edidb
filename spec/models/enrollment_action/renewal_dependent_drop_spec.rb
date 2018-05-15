@@ -37,7 +37,7 @@ describe EnrollmentAction::RenewalDependentDrop, "given a qualified enrollent se
   let(:subscriber_start) { Date.today }
   let(:member_end_date) { Date.today - 1.day }
   let(:terminated_member_ids) { [2] }
- 
+
   let(:action_event) { instance_double(
     ::ExternalEvents::EnrollmentEventNotification,
     :policy_cv => new_policy_cv,
@@ -58,9 +58,10 @@ describe EnrollmentAction::RenewalDependentDrop, "given a qualified enrollent se
     allow(ExternalEvents::ExternalMember).to receive(:new).with(member_primary).and_return(primary_db_record)
 
     allow(EnrollmentAction::RenewalDependentDrop).to receive(:other_carrier_renewal_candidates).with(action_event).and_return([old_policy])
-    allow(ExternalEvents::ExternalPolicy).to receive(:new).with(new_policy_cv, plan, false).and_return(policy_updater)
+    allow(ExternalEvents::ExternalPolicy).to receive(:new).with(new_policy_cv, plan, false, market_from_payload: subject.action).and_return(policy_updater)
     allow(policy_updater).to receive(:persist).and_return(true)
     allow(old_policy).to receive(:terminate_member_id_on).with(2, member_end_date).and_return(true)
+    allow(subject.action).to receive(:kind).and_return(action_event)
   end
 
   it "creates the new policy" do
@@ -92,7 +93,7 @@ describe EnrollmentAction::RenewalDependentDrop, "given a qualified enrollent se
   let(:event_responder) { instance_double(::ExternalEvents::EventResponder, :connection => amqp_connection) }
   let(:event_xml) { double }
   let(:action_helper_result_xml) { double }
- 
+
   let(:action_event) { instance_double(
     ::ExternalEvents::EnrollmentEventNotification,
     :event_responder => event_responder,
@@ -111,7 +112,7 @@ describe EnrollmentAction::RenewalDependentDrop, "given a qualified enrollent se
   ) }
 
   let(:terminated_policy_eg_id) { 3 }
-  let(:employer_hbx_id) { 1 } 
+  let(:employer_hbx_id) { 1 }
   let(:employer) { instance_double(Employer, :hbx_id => employer_hbx_id) }
   let(:termination_writer) {
     instance_double(::EnrollmentAction::EnrollmentTerminationEventWriter)
