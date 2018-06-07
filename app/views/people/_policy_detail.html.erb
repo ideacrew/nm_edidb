@@ -19,11 +19,7 @@
 		  <dt>Sponsor</dt>
 		  <dd><%= policy_sponsor(p) %></dd>
 		  <dt>Status</dt>
-      <% if (p.term_for_np == true) && (p.aasm_state == "terminated") %>
-        <dd><%= p.aasm_state.capitalize %> (NPT)</dd>
-      <% else %>
-		    <dd><%= p.aasm_state.capitalize %></dd>
-      <% end %>
+      <dd><%= policy_status(p) %></dd>
 		  <%if can? :edit, @people %>
 		  		<% ben_statuses = [] %>
 		  		<% p.enrollees.each do |enrollee| %>
