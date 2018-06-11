@@ -6,7 +6,7 @@ describe MarkPoliciesForNonPayment, dbclean: :after_each do
   # policy factory generates a policy with the kind atrribute set to "individual" by default
   # this will verify that the rake task is actually making a change and that the test instance
   # does not have the correct value already
-  let!(:policy) { FactoryGirl.create(:policy, _id: "123456789") }
+  let!(:policy) { FactoryGirl.create(:policy, aasm_state: "terminated") }
   subject { MarkPoliciesForNonPayment.new(given_task_name, double(:current_scope => nil)) }
 
   describe "given a task name" do
@@ -18,8 +18,6 @@ describe MarkPoliciesForNonPayment, dbclean: :after_each do
   describe "updating the term_for_np field to be true" do
     before(:each) do
       allow(ENV).to receive(:[]).with("policy_id").and_return(policy.id)
-      subject.migrate
-      policy.reload
     end
 
     it "should initially be set to false" do
@@ -27,8 +25,8 @@ describe MarkPoliciesForNonPayment, dbclean: :after_each do
     end
 
     it "should be set to true after the rake task is complete" do
-      #subject.migrate
-      #policy.reload
+      subject.migrate
+      policy.reload
       expect(policy.term_for_np).to eq true
     end
   end
