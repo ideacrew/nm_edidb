@@ -7,5 +7,9 @@ module EnrollmentAction
     def carriers_are_different?(chunk)
       chunk.first.existing_plan.carrier_id != chunk.last.existing_plan.carrier_id
     end
+
+    def new_market?(chunk)
+      chunk.first.enrollment_event_xml.event.body.enrollment.market != chunk.last.enrollment_event_xml.event.body.enrollment.market
+    end
   end
 end
