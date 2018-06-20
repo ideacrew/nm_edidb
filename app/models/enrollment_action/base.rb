@@ -39,6 +39,7 @@ module EnrollmentAction
         ::EnrollmentAction::AssistanceChange,
         ::EnrollmentAction::InitialEnrollment,
         ::EnrollmentAction::Termination,
+        ::EnrollmentAction::MarketChange,
         ::EnrollmentAction::ReselectionOfExistingCoverage
       ].detect { |kls| kls.qualifies?(chunk) }
       
