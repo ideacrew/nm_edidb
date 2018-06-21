@@ -25,6 +25,7 @@ module EnrollmentAction
         ::EnrollmentAction::ActiveRenewal,
         ::EnrollmentAction::CarrierSwitch,
         ::EnrollmentAction::CarrierSwitchRenewal,
+        ::EnrollmentAction::MarketChange,
         ::EnrollmentAction::DependentAdd,
         ::EnrollmentAction::DependentDrop,
         ::EnrollmentAction::PlanChange,
@@ -39,7 +40,6 @@ module EnrollmentAction
         ::EnrollmentAction::AssistanceChange,
         ::EnrollmentAction::InitialEnrollment,
         ::EnrollmentAction::Termination,
-        ::EnrollmentAction::MarketChange,
         ::EnrollmentAction::ReselectionOfExistingCoverage
       ].detect { |kls| kls.qualifies?(chunk) }
       
