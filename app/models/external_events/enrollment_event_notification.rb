@@ -299,6 +299,10 @@ module ExternalEvents
       @active_year ||= extract_active_year(policy_cv)
     end
 
+    def kind
+      @kind ||= extract_market_kind(enrollment_event_xml)
+    end
+
     def is_adjacent_to?(other)
       return false unless active_year == other.active_year
       case [is_termination?, other.is_termination?]
@@ -326,7 +330,7 @@ module ExternalEvents
     def is_shop?
       !employer_hbx_id.blank?
     end
-    
+
     def submitted_at_time
       timestamp_value = Maybe.new(enrollment_event_xml).header.submitted_timestamp.value
       Time.strptime(timestamp_value, "%Y-%m-%dT%H:%M:%S") rescue nil

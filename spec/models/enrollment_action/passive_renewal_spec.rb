@@ -4,13 +4,13 @@ describe EnrollmentAction::PassiveRenewal, "enrollment set for passive renewal e
   let(:plan) { instance_double(Plan, :id => 1, carrier_id: 1) }
   let(:new_plan) { instance_double(Plan, :id => 2, carrier_id: 2) }
 
-  let(:event_1) { 
-    instance_double(ExternalEvents::EnrollmentEventNotification, 
-                    :existing_plan => plan, 
+  let(:event_1) {
+    instance_double(ExternalEvents::EnrollmentEventNotification,
+                    :existing_plan => plan,
                     :is_termination? => "urn:openhbx:terms:v1:enrollment#terminate_enrollment",
                     :all_member_ids => [1,2]) }
-  let(:event_2) { 
-    instance_double(ExternalEvents::EnrollmentEventNotification, 
+  let(:event_2) {
+    instance_double(ExternalEvents::EnrollmentEventNotification,
                     :existing_plan => new_plan,
                     :is_termination? => false,
                     :is_passive_renewal? => "urn:openhbx:terms:v1:enrollment#auto_renew",
@@ -18,7 +18,7 @@ describe EnrollmentAction::PassiveRenewal, "enrollment set for passive renewal e
   let(:event_set) { [event_1, event_2] }
 
   subject { EnrollmentAction::PassiveRenewal }
-  
+
   it "does not qualify with termiantion event" do
     expect(subject.qualifies?([event_1])).to be_falsey
   end
@@ -56,10 +56,11 @@ describe EnrollmentAction::PassiveRenewal, "persists enrollment set for passive 
   before :each do
     allow(ExternalEvents::ExternalMember).to receive(:new).with(member_primary).
       and_return(primary_db_record)
-    allow(ExternalEvents::ExternalPolicy).to receive(:new).with(new_policy_cv, new_plan, false).
+    allow(ExternalEvents::ExternalPolicy).to receive(:new).with(new_policy_cv, new_plan, false, market_from_payload: subject.action).
       and_return(policy_updater)
     allow(policy_updater).to receive(:persist).and_return(true)
     allow(subject.action).to receive(:existing_policy).and_return(false)
+    allow(subject.action).to receive(:kind).and_return(passive_renewal_event)
   end
 
   it "passive renewal persists" do
