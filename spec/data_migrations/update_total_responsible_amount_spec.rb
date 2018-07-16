@@ -15,10 +15,16 @@ describe UpdateTotalResponsibleAmount, dbclean: :after_each do
   describe "updating total responsible amount" do 
 
     it 'update the total responsible amount' do
-      allow(ENV).to receive(:[]).with("policy_id").and_return(policy.id)
+      allow(ENV).to receive(:[]).with("eg_id").and_return(policy.id)
+      allow(ENV).to receive(:[]).with("total_responsible_amount").and_return(5)
+      allow(ENV).to receive(:[]).with("premium_amount_total").and_return(4)
+      allow(ENV).to receive(:[]).with("applied_aptc").and_return(3)
       subject.migrate
       policy.reload
-      expect(policy.tot_res_amt).to eq BigDecimal.new((8.to_f).to_s)
+      expect(policy.tot_res_amt).to eq BigDecimal.new((5.to_f).to_s)
+      expect(policy.pre_amt_tot).to eq BigDecimal.new((4.to_f).to_s)
+      expect(policy.applied_aptc).to eq BigDecimal.new((3.to_f).to_s)
+
     end
 
   end
