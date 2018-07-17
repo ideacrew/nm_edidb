@@ -15,7 +15,7 @@ describe UpdateTotalResponsibleAmount, dbclean: :after_each do
   describe "updating policy totals" do 
 
     it 'update policy totals' do
-      allow(ENV).to receive(:[]).with("eg_id").and_return(policy.id)
+      allow(ENV).to receive(:[]).with("eg_id").and_return(policy.eg_id)
       allow(ENV).to receive(:[]).with("total_responsible_amount").and_return(5)
       allow(ENV).to receive(:[]).with("premium_amount_total").and_return(4)
       allow(ENV).to receive(:[]).with("applied_aptc").and_return(3)
@@ -28,7 +28,7 @@ describe UpdateTotalResponsibleAmount, dbclean: :after_each do
     end
 
     it 'update the policy totals  missing total responsible amount' do
-      allow(ENV).to receive(:[]).with("eg_id").and_return(policy.id)
+      allow(ENV).to receive(:[]).with("eg_id").and_return(policy.eg_id)
       allow(ENV).to receive(:[]).with("total_responsible_amount").and_return('')
       allow(ENV).to receive(:[]).with("premium_amount_total").and_return(4)
       allow(ENV).to receive(:[]).with("applied_aptc").and_return(nil)
@@ -41,7 +41,7 @@ describe UpdateTotalResponsibleAmount, dbclean: :after_each do
     end
 
     it 'update the policy totals missing premium amount totals' do
-      allow(ENV).to receive(:[]).with("eg_id").and_return(policy.id)
+      allow(ENV).to receive(:[]).with("eg_id").and_return(policy.eg_id)
       allow(ENV).to receive(:[]).with("total_responsible_amount").and_return(5)
       allow(ENV).to receive(:[]).with("premium_amount_total").and_return('')
       allow(ENV).to receive(:[]).with("applied_aptc").and_return(3)
@@ -54,7 +54,7 @@ describe UpdateTotalResponsibleAmount, dbclean: :after_each do
     end   
 
     it 'update the policy totals missing total applied aptc' do
-      allow(ENV).to receive(:[]).with("eg_id").and_return(policy.id)
+      allow(ENV).to receive(:[]).with("eg_id").and_return(policy.eg_id)
       allow(ENV).to receive(:[]).with("total_responsible_amount").and_return(5)
       allow(ENV).to receive(:[]).with("premium_amount_total").and_return(4)
       allow(ENV).to receive(:[]).with("applied_aptc").and_return('')
@@ -67,7 +67,7 @@ describe UpdateTotalResponsibleAmount, dbclean: :after_each do
     end
 
     it 'update the policy totals with non numbers' do
-      allow(ENV).to receive(:[]).with("eg_id").and_return(policy.id)
+      allow(ENV).to receive(:[]).with("eg_id").and_return(policy.eg_id)
       allow(ENV).to receive(:[]).with("total_responsible_amount").and_return(5)
       allow(ENV).to receive(:[]).with("premium_amount_total").and_return(4)
       allow(ENV).to receive(:[]).with("applied_aptc").and_return('asdlasjf')
