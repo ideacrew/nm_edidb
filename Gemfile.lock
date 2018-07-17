@@ -490,7 +490,6 @@ DEPENDENCIES
   parallel_tests
   pd_x12
   prawn (~> 0.11.1)
-  pry
   pry-rails
   psych (= 2.0.5)
   rails (= 3.2.22.5)
