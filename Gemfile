@@ -45,10 +45,12 @@ group :development, :assets do
 end
 
 group :development, :test do
+
   gem "parallel_tests"
 end
 
 group :test do
+  gem 'pry'
   gem 'test-unit'
 	gem 'mongoid-rspec'
   gem 'rspec-rails', '3.3.3'

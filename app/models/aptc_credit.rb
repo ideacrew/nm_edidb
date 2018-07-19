@@ -1,4 +1,4 @@
-class AptcCredit
+  class AptcCredit
   include Mongoid::Document
 
   field :start_on, type: Date
