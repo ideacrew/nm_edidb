@@ -15,7 +15,7 @@ class CreateAptcCredits < MongoidMigrationTask
     else
        policy.aptc_credits.create(start_on: start_on, end_on: end_on ,aptc: aptc, pre_amt_tot: pre_amt_tot, tot_res_amt: tot_res_amt)
        policy.save!
-       p "APTC credits have been created for #{policy.eg_id}"
+       p "APTC credits have been created for policy #{policy.eg_id}"
     end
 
   end
