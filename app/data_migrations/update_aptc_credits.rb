@@ -1,9 +1,9 @@
 require File.join(Rails.root, "lib/mongoid_migration_task")
 class UpdateAptcCredits < MongoidMigrationTask
+  
 
   def migrate
     policy = Policy.where(eg_id: ENV['eg_id']).first
-
     if policy.blank?
       p "unable to find policy #{ENV['eg_id']}"
     elsif policy.aptc_credits.present? 
