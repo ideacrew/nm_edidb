@@ -4,11 +4,12 @@ class ChangeEnrolleeEndDate < MongoidMigrationTask
  def migrate
    policy = Policy.where(eg_id: ENV['eg_id']).first
    m_id = ENV['m_id']
+   start_on = Date.strptime(ENV['start_date'].to_s, '%m/%d/%Y')
    end_on = Date.strptime(ENV['new_end_date'].to_s, "%m/%d/%Y")
    if policy.blank?
      puts "No hbx_enrollment was found with the given hbx_id" unless Rails.env.test?
    else
-     enrollee=policy.enrollees.where(m_id: m_id).first
+     enrollee=policy.enrollees.where(m_id: m_id, coverage_start: start_on).first
      enrollee.update_attributes!(coverage_end: end_on)
       puts "enrollee coverage end modified...!" unless Rails.env.test?
    end
