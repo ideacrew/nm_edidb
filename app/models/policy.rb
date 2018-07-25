@@ -747,7 +747,7 @@ class Policy
 
   def check_multi_aptc
     return true unless self.multi_aptc?
-    latest_record = self.latest_aptc_record
+    latest_record = self.aptc_record_on(policy_end)
     self.applied_aptc = latest_record.aptc
     self.pre_amt_tot = latest_record.pre_amt_tot
     self.tot_res_amt = latest_record.tot_res_amt
