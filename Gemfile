@@ -45,7 +45,6 @@ group :development, :assets do
 end
 
 group :development, :test do
-
   gem "parallel_tests"
 end
 
