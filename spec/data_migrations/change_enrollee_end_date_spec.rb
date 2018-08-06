@@ -27,5 +27,12 @@ describe ChangeEnrolleeEndDate, dbclean: :after_each do
       policy.reload
       expect(policy.enrollees.where(m_id: m_id).first.coverage_end).to eq Date.strptime("01/31/2017", "%m/%d/%Y")
     end
+    
+    it "validate input" do
+      allow(ENV).to receive(:[]).with("new_end_date").and_return(nil)
+
+      expect(subject.input_valid?.present?).to eq(false)
+    end
+    
   end
 end

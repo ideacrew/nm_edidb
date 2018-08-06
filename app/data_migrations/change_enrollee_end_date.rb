@@ -1,11 +1,11 @@
 require File.join(Rails.root, "lib/mongoid_migration_task")
 
 class ChangeEnrolleeEndDate < MongoidMigrationTask
-
+  
   def input_valid?
-    return true if ENV['eg_id'].present? && ENV['m_id'].present? && ENV['start_date'].present? && ENV['new_end_date'].present?
+    true if ENV['eg_id'].present? && ENV['m_id'].present? && ENV['start_date'].present? && ENV['new_end_date'].present?
   end
-
+  
   def migrate
     if input_valid?
       policy = Policy.where(eg_id: ENV['eg_id']).first
