@@ -57,13 +57,13 @@ module Parsers
                   is_policy_cancel = true
                   policy_end_date = enrollee.coverage_end
                   enrollee.policy.aasm_state = "canceled"
-                  enrollee.policy.term_for_np = true
+                  enrollee.policy.term_for_np = true if is_non_payment
                   enrollee.policy.save
                 else
                   is_policy_term = true
                   policy_end_date = enrollee.coverage_end
                   enrollee.policy.aasm_state = "terminated"
-                  enrollee.policy.term_for_np = true
+                  enrollee.policy.term_for_np = true if is_non_payment
                   enrollee.policy.save
                 end
               end
