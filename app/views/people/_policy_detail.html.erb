@@ -19,12 +19,12 @@
 		  <dt>Sponsor</dt>
 		  <dd><%= policy_sponsor(p) %></dd>
 		  <dt>Status</dt>
-		  <dd><%= p.aasm_state.capitalize %></dd>
+      <dd><%= policy_status(p) %></dd>
 		  <%if can? :edit, @people %>
 		  		<% ben_statuses = [] %>
 		  		<% p.enrollees.each do |enrollee| %>
 		  				<% ben_statuses.push(enrollee.ben_stat.upcase) %>
-		  		<% end %> 
+		  		<% end %>
 		  		<% ben_statuses.uniq! %>
 		  		<% if ben_statuses.any? {|ben_stat| ben_stat != "ACTIVE" } %>
 		  		<dt>Benefit Status</dt>

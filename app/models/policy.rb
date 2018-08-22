@@ -44,6 +44,9 @@ class Policy
   field :kind, type: String
   field :enrollment_kind, type: String
 
+  # flag for termination of policy due to non-payment
+  field :term_for_np, type: Boolean, default: false
+
   validates_presence_of :eg_id
   validates_presence_of :pre_amt_tot
   validates_presence_of :tot_res_amt
