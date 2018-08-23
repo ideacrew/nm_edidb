@@ -40,7 +40,7 @@ module Parsers
         is_policy_cancel = false
         is_non_payment = false
         @etf.people.each do |person_loop|
-          begin 
+          begin
             enrollee = @policy.enrollee_for_member_id(person_loop.member_id)
 
             policy_loop = person_loop.policy_loops.first
@@ -57,10 +57,14 @@ module Parsers
                   is_policy_cancel = true
                   policy_end_date = enrollee.coverage_end
                   enrollee.policy.aasm_state = "canceled"
+                  enrollee.policy.term_for_np = true if is_non_payment
+                  enrollee.policy.save
                 else
                   is_policy_term = true
                   policy_end_date = enrollee.coverage_end
                   enrollee.policy.aasm_state = "terminated"
+                  enrollee.policy.term_for_np = true if is_non_payment
+                  enrollee.policy.save
                 end
               end
             end
@@ -80,7 +84,7 @@ module Parsers
                            end
           Amqp::EventBroadcaster.with_broadcaster do |eb|
             eb.broadcast(
-              { 
+              {
                 :routing_key => "info.events.policy.terminated",
                 :headers => {
                   :resource_instance_uri => @policy.eg_id,
@@ -99,7 +103,7 @@ module Parsers
                            end
           Amqp::EventBroadcaster.with_broadcaster do |eb|
             eb.broadcast(
-              { 
+              {
                 :routing_key => "info.events.policy.canceled",
                 :headers => {
                   :resource_instance_uri => @policy.eg_id,
