@@ -62,8 +62,8 @@ module EmployerEvents
           (epy_start..epy_end).overlaps?((start_date..end_date))
         end
 
-        plan_year = existing_plan_years.where(start_date: start_date).first
-        if plan_year.present?
+        plan_year = existing_plan_years.select {|py| py.start_date == start_date}.first
+        if plan_year.present? && plan_year.end_date != pyvs[:end_date]
           plan_year.update_attributes!(end_date: pyvs[:end_date])
         end
 
