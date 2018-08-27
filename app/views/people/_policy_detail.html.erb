@@ -19,12 +19,12 @@
 		  <dt>Sponsor</dt>
 		  <dd><%= policy_sponsor(p) %></dd>
 		  <dt>Status</dt>
-		  <dd><%= p.aasm_state.capitalize %></dd>
+      <dd><%= policy_status(p) %></dd>
 		  <%if can? :edit, @people %>
 		  		<% ben_statuses = [] %>
 		  		<% p.enrollees.each do |enrollee| %>
 		  				<% ben_statuses.push(enrollee.ben_stat.upcase) %>
-		  		<% end %> 
+		  		<% end %>
 		  		<% ben_statuses.uniq! %>
 		  		<% if ben_statuses.any? {|ben_stat| ben_stat != "ACTIVE" } %>
 		  		<dt>Benefit Status</dt>
@@ -71,7 +71,11 @@
 		<%= link_to "Create CV", new_change_vocabulary_path(p, {:change_vocabulary => {:policy_id => p.id}}), :class => "btn btn-primary" %>
 		<p></p>
 		<%= link_to "Cancel / Term", cancelterminate_policy_path(p), :class => "btn btn-inverse" %>
-	</div>
+    <p></p>
+    <% if show_1095A_document_button?(p) %>
+      <%= link_to "1095A Document", generate_tax_document_form_policy_path(p, {person_id: @person.id}), :class => "btn btn-primary" %>
+    <% end %>
+  </div>
 	<% end %>
 </div>
 
