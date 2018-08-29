@@ -16,6 +16,7 @@ module EmployerEvents
     end
 
     def has_current_or_future_plan_year?(carrier)
+      return true if EmployerEvents::EventNames::TERMINATION_EVENTS.include?(employer_event.event_name)
       found_plan_year = false
       carrier_plan_years(carrier).each do |node|
         node.xpath("cv:plan_year_start", {:cv => XML_NS}).each do |date_node|
@@ -78,19 +79,19 @@ module EmployerEvents
       found_future_plan_year
     end
 
-    def plan_year_drop?(carrier)
+    def drop_plan_year_not_found?(carrier)
       return false if employer_event.event_name != EmployerEvents::EventNames::RENEWAL_CARRIER_CHANGE_EVENT
-      found_plan_year = false
+      found_drop_plan_year = false
       carrier_plan_years(carrier).each do |node|
         node.xpath("//cv:plan_year", {:cv => XML_NS}).each do |date_node|
           start_date = Date.strptime(date_node.xpath("cv:plan_year_start", {:cv => XML_NS}).first.content,"%Y%m%d") rescue nil
           end_date = Date.strptime(date_node.xpath("cv:plan_year_end", {:cv => XML_NS}).first.content,"%Y%m%d") rescue nil
           if start_date && end_date && start_date == end_date
-            found_plan_year = true
+            found_drop_plan_year = true
           end
         end
       end
-      found_plan_year
+      !found_drop_plan_year
     end
 
     # Return true if we rendered anything
@@ -108,7 +109,7 @@ module EmployerEvents
       return false unless has_current_or_future_plan_year?(carrier)
       return false if drop_and_has_future_plan_year?(carrier)
       return false if renewal_and_no_future_plan_year?(carrier)
-      return false unless plan_year_drop?(carrier)
+      return false if drop_plan_year_not_found?(carrier)
 
       doc.xpath("//cv:elected_plans/cv:elected_plan", {:cv => XML_NS}).each do |node|
         carrier_id = node.at_xpath("cv:carrier/cv:id/cv:id", {:cv => XML_NS}).content
