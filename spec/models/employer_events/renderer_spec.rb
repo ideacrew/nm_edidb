@@ -367,7 +367,7 @@ describe EmployerEvents::Renderer, "given an plan year cancelation xml, with an 
     let(:plan_year_start) { Date.today.beginning_of_month }
     let(:plan_year_end) { Date.today.beginning_of_month }
 
-    it "should return true for carrier drop event with canceled plan year" do
+    it "should return false for carrier drop event with canceled plan year" do
       expect(subject.drop_plan_year_not_found?(carrier)).to be_falsey
     end
 
@@ -385,12 +385,111 @@ describe EmployerEvents::Renderer, "given an plan year cancelation xml, with an 
     let(:plan_year_start) { Date.today + 1.day }
     let(:plan_year_end) { plan_year_start + 1.year - 1.day }
 
-    it "should return false for carrier drop event with no canceled plan year" do
+    it "should return true for carrier drop event with no canceled plan year" do
       expect(subject.drop_plan_year_not_found?(carrier)).to be_truthy
     end
 
     it "should return true for carrier drop event with future plan year" do
       expect(subject.drop_and_has_future_plan_year?(carrier)).to be_truthy
+    end
+  end
+end
+
+describe EmployerEvents::Renderer, "given an termianation xml, with an nonpayment/voltunary termination event" do
+  let(:event_time) { double }
+  let(:carrier) { instance_double(Carrier, :hbx_carrier_id => hbx_carrier_id) }
+
+  let(:source_document) do
+    <<-XMLCODE
+		<plan_years xmlns="http://openhbx.org/api/terms/1.0">
+			<plan_year>
+				<plan_year_start>#{plan_year_start.strftime("%Y%m%d")}</plan_year_start>
+				<plan_year_end>#{plan_year_end.strftime("%Y%m%d")}</plan_year_end>
+				<open_enrollment_start>20151013</open_enrollment_start>
+				<open_enrollment_end>20151110</open_enrollment_end>
+				<benefit_groups>
+					<benefit_group>
+						<name>Health Insurance</name>
+						<elected_plans>
+							<elected_plan>
+								<id>
+									<id>A HIOS ID</id>
+								</id>
+								<name>A PLAN NAME</name>
+								<active_year>2015</active_year>
+								<is_dental_only>false</is_dental_only>
+								<carrier>
+									<id>
+										<id>SOME CARRIER ID</id>
+									</id>
+									<name>A CARRIER NAME</name>
+								</carrier>
+							</elected_plan>
+						</elected_plans>
+					</benefit_group>
+				</benefit_groups>
+       </plan_year>
+     </plan_years>
+    XMLCODE
+  end
+
+
+
+  describe "with plan years for the specified carrier, with benefit_coverage_period_terminated_voluntary event" do
+
+    let(:employer_event) { instance_double(EmployerEvent, {:event_time => event_time, :event_name => "benefit_coverage_period_terminated_voluntary", :resource_body => source_document}) }
+
+    subject do
+      EmployerEvents::Renderer.new(employer_event)
+    end
+
+    let(:hbx_carrier_id) { "SOME CARRIER ID" }
+    let(:plan_year_start) { Date.today.beginning_of_month }
+    let(:plan_year_end) { plan_year_start + 1.year - 1.day }
+
+    it "should return true for plan year present check" do
+      expect(subject.has_current_or_future_plan_year?(carrier)).to be_truthy
+    end
+
+    it "should return false" do
+      expect(subject.drop_and_has_future_plan_year?(carrier)).to be_falsey
+    end
+
+    it "should return false" do
+      expect(subject.renewal_and_no_future_plan_year?(carrier)).to be_falsey
+    end
+
+    it "should return false" do
+      expect(subject.drop_plan_year_not_found?(carrier)).to be_falsey
+    end
+  end
+
+  describe "with plan years for the specified carrier, with benefit_coverage_period_terminated_nonpayment event" do
+
+    let(:employer_event) { instance_double(EmployerEvent, {:event_time => event_time, :event_name => "benefit_coverage_period_terminated_nonpayment", :resource_body => source_document}) }
+
+    subject do
+      EmployerEvents::Renderer.new(employer_event)
+    end
+
+    let(:hbx_carrier_id) { "SOME CARRIER ID" }
+    let(:plan_year_start) { Date.today + 1.day }
+    let(:plan_year_end) { plan_year_start + 1.year - 1.day }
+
+    it "should return true for plan year present check" do
+      expect(subject.has_current_or_future_plan_year?(carrier)).to be_truthy
+    end
+
+    it "should return false" do
+      expect(subject.drop_and_has_future_plan_year?(carrier)).to be_falsey
+    end
+
+    it "should return false" do
+      expect(subject.renewal_and_no_future_plan_year?(carrier)).to be_falsey
+    end
+
+    it "should return false" do
+      expect(subject.drop_plan_year_not_found?(carrier)).to be_falsey
     end
   end
 end

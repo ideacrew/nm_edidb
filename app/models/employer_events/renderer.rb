@@ -16,7 +16,7 @@ module EmployerEvents
     end
 
     def has_current_or_future_plan_year?(carrier)
-      return true if EmployerEvents::EventNames::TERMINATION_EVENTS.include?(employer_event.event_name)
+      return true if EmployerEvents::EventNames::TERMINATION_EVENT.include?(employer_event.event_name)
       found_plan_year = false
       carrier_plan_years(carrier).each do |node|
         node.xpath("cv:plan_year_start", {:cv => XML_NS}).each do |date_node|
