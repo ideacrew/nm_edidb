@@ -368,7 +368,7 @@ describe EmployerEvents::Renderer, "given an plan year cancelation xml, with an 
     let(:plan_year_end) { Date.today.beginning_of_month }
 
     it "should return true for carrier drop event with canceled plan year" do
-      expect(subject.plan_year_drop?(carrier)).to be_truthy
+      expect(subject.drop_plan_year_not_found?(carrier)).to be_falsey
     end
 
     it "should return true if has canceled plan year" do
@@ -386,7 +386,7 @@ describe EmployerEvents::Renderer, "given an plan year cancelation xml, with an 
     let(:plan_year_end) { plan_year_start + 1.year - 1.day }
 
     it "should return false for carrier drop event with no canceled plan year" do
-      expect(subject.plan_year_drop?(carrier)).to be_falsey
+      expect(subject.drop_plan_year_not_found?(carrier)).to be_truthy
     end
 
     it "should return true for carrier drop event with future plan year" do
