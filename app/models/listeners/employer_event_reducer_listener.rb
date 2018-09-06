@@ -33,10 +33,9 @@ module Listeners
       channel.ack(delivery_info.delivery_tag, false)
     end
 
-    def request_resource(employer_id, options = {})
+    def request_resource(employer_id, plan_year_id = nil)
       begin
-        headers = options[:plan_year_id].present? ? {:employer_id => employer_id, plan_year_id:  options[:plan_year_id]} : {:employer_id => employer_id}
-        di, rprops, resp_body = request({:headers => headers, :routing_key => "resource.employer"},"", 30)
+        di, rprops, resp_body = request({:headers => {:employer_id => employer_id, :plan_year_id => plan_year_id}, :routing_key => "resource.employer"},"", 30)
         r_headers = (rprops.headers || {}).to_hash.stringify_keys
         r_code = r_headers['return_status'].to_s
         if r_code == "200"
@@ -62,8 +61,7 @@ module Listeners
       end
       event_time = get_timestamp(properties)
       if EmployerEvent.newest_event?(employer_id, event_name, event_time)
-        options = plan_year_id.present? ? {plan_year_id: plan_year_id} : {}
-        r_code, resource_or_body = request_resource(employer_id, options)
+        r_code, resource_or_body = request_resource(employer_id, plan_year_id)
         case r_code.to_s
         when "200"
           process_retrieved_resource(delivery_info, employer_id, resource_or_body, m_headers, event_name, event_time)
