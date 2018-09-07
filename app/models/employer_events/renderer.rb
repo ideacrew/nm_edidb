@@ -41,34 +41,24 @@ module EmployerEvents
     def should_send_retroactive_term_or_cancel?(carrier)
       events = EmployerEvents::EventNames::TERMINATION_EVENT + [EmployerEvents::EventNames::RENEWAL_CARRIER_CHANGE_EVENT]
       return false unless events.include?(employer_event.event_name)
-
       doc = Nokogiri::XML(employer_event.resource_body)
       all_plan_years = doc.xpath("//cv:plan_year", {:cv => XML_NS})
-
       return false if all_plan_years.empty?
-
       sorted_plan_years = all_plan_years.sort_by do |node|
         Date.strptime(node.xpath("cv:plan_year_start", {:cv => XML_NS}).first.content,"%Y%m%d") rescue nil
       end
-
-      if employer_event.event_name == EmployerEvents::EventNames::RENEWAL_CARRIER_CHANGE_EVENT
-        last_plan_year = sorted_plan_years.select do |date_node|
-          start_date = Date.strptime(date_node.xpath("cv:plan_year_start", {:cv => XML_NS}).first.content,"%Y%m%d") rescue nil
-          end_date = Date.strptime(date_node.xpath("cv:plan_year_end", {:cv => XML_NS}).first.content,"%Y%m%d") rescue nil
-          start_date == end_date
-        end.last
-      else
-        last_plan_year = sorted_plan_years.select do |date_node|
-          start_date = Date.strptime(date_node.xpath("cv:plan_year_start", {:cv => XML_NS}).first.content,"%Y%m%d") rescue nil
-          end_date = Date.strptime(date_node.xpath("cv:plan_year_end", {:cv => XML_NS}).first.content,"%Y%m%d") rescue nil
-          start_date != end_date && (end_date > Date.today - 1.year || end_date > Date.today)
-        end.last
-      end
-
+      last_plan_year = sorted_plan_years.last
       if last_plan_year.present? && last_plan_year.xpath("//cv:elected_plans/cv:elected_plan/cv:carrier/cv:id/cv:id[text() = '#{carrier.hbx_carrier_id}']", {:cv => XML_NS}).any?
-        return true
+        start_date = Date.strptime(last_plan_year.xpath("cv:plan_year_start", {:cv => XML_NS}).first.content,"%Y%m%d") rescue nil
+        end_date = Date.strptime(last_plan_year.xpath("cv:plan_year_end", {:cv => XML_NS}).first.content,"%Y%m%d") rescue nil
+        return false if start_date.blank? || end_date.blank?
+        if employer_event.event_name == EmployerEvents::EventNames::RENEWAL_CARRIER_CHANGE_EVENT
+          start_date == end_date
+        else
+          start_date != end_date && end_date > Date.today - 1.year
+        end
       else
-        return false
+        false
       end
     end
 

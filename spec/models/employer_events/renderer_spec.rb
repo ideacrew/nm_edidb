@@ -354,33 +354,6 @@ describe EmployerEvents::Renderer, "given an plan year cancelation xml, with an 
 					</benefit_group>
 				</benefit_groups>
        </plan_year>
-      <plan_year>
-				<plan_year_start>#{plan_year_start2.strftime("%Y%m%d")}</plan_year_start>
-				<plan_year_end>#{plan_year_end2.strftime("%Y%m%d")}</plan_year_end>
-				<open_enrollment_start>20151013</open_enrollment_start>
-				<open_enrollment_end>20151110</open_enrollment_end>
-				<benefit_groups>
-					<benefit_group>
-						<name>Health Insurance</name>
-						<elected_plans>
-							<elected_plan>
-								<id>
-									<id>A HIOS ID</id>
-								</id>
-								<name>A PLAN NAME</name>
-								<active_year>2015</active_year>
-								<is_dental_only>false</is_dental_only>
-								<carrier>
-									<id>
-										<id>SOME CARRIER ID</id>
-									</id>
-									<name>A CARRIER NAME</name>
-								</carrier>
-							</elected_plan>
-						</elected_plans>
-					</benefit_group>
-				</benefit_groups>
-       </plan_year>
      </plan_years>
     XMLCODE
   end
@@ -393,8 +366,6 @@ describe EmployerEvents::Renderer, "given an plan year cancelation xml, with an 
     let(:hbx_carrier_id) { "SOME CARRIER ID" }
     let(:plan_year_start) { Date.today.beginning_of_month }
     let(:plan_year_end) { Date.today.beginning_of_month }
-    let(:plan_year_start2) { Date.today.beginning_of_month - 1.month }
-    let(:plan_year_end2) { Date.today.beginning_of_month - 1.month }
 
     it "should return true for carrier drop event with canceled plan year" do
       expect(subject.should_send_retroactive_term_or_cancel?(carrier)).to be_truthy
@@ -416,11 +387,9 @@ describe EmployerEvents::Renderer, "given an plan year cancelation xml, with an 
   describe "with plan years for the specified carrier, drop event with future plan year" do
     let(:hbx_carrier_id) { "SOME CARRIER ID" }
 
-    let(:plan_year_start) {  Date.today.next_month.beginning_of_month - 1.year }
+    let(:plan_year_start) {  Date.today.next_month.beginning_of_month }
     let(:plan_year_end) {  plan_year_start + 1.year - 1.day }
 
-    let(:plan_year_start2) { plan_year_end + 1.day }
-    let(:plan_year_end2) { plan_year_start2 + 1.year - 1.day  }
 
     it "should return false for carrier drop event without canceled plan year" do
       expect(subject.should_send_retroactive_term_or_cancel?(carrier)).to be_falsey
@@ -474,33 +443,6 @@ describe EmployerEvents::Renderer, "given an termianation xml, with an nonpaymen
 					</benefit_group>
 				</benefit_groups>
        </plan_year>
-      <plan_year>
-				<plan_year_start>#{plan_year_start2.strftime("%Y%m%d")}</plan_year_start>
-				<plan_year_end>#{plan_year_end2.strftime("%Y%m%d")}</plan_year_end>
-				<open_enrollment_start>20151013</open_enrollment_start>
-				<open_enrollment_end>20151110</open_enrollment_end>
-				<benefit_groups>
-					<benefit_group>
-						<name>Health Insurance</name>
-						<elected_plans>
-							<elected_plan>
-								<id>
-									<id>A HIOS ID</id>
-								</id>
-								<name>A PLAN NAME</name>
-								<active_year>2015</active_year>
-								<is_dental_only>false</is_dental_only>
-								<carrier>
-									<id>
-										<id>SOME CARRIER ID</id>
-									</id>
-									<name>A CARRIER NAME</name>
-								</carrier>
-							</elected_plan>
-						</elected_plans>
-					</benefit_group>
-				</benefit_groups>
-       </plan_year>
      </plan_years>
     XMLCODE
   end
@@ -518,8 +460,6 @@ describe EmployerEvents::Renderer, "given an termianation xml, with an nonpaymen
     let(:hbx_carrier_id) { "SOME CARRIER ID" }
     let(:plan_year_start) { Date.today.beginning_of_month - 10.month }
     let(:plan_year_end) {  (plan_year_start + 8.month).end_of_month }
-    let(:plan_year_start2) { plan_year_end + 1.day }
-    let(:plan_year_end2) { plan_year_start2 }
 
     it "should return true if terminated plan year present" do
       expect(subject.should_send_retroactive_term_or_cancel?(carrier)).to be_truthy
@@ -549,8 +489,6 @@ describe EmployerEvents::Renderer, "given an termianation xml, with an nonpaymen
     let(:hbx_carrier_id) { "SOME CARRIER ID" }
     let(:plan_year_start) { Date.today.beginning_of_month - 10.month }
     let(:plan_year_end) {  (plan_year_start + 8.month).end_of_month }
-    let(:plan_year_start2) { plan_year_end + 1.day }
-    let(:plan_year_end2) { plan_year_start2 }
 
     it "should return true if terminated plan year present" do
       expect(subject.should_send_retroactive_term_or_cancel?(carrier)).to be_truthy
