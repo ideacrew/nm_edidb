@@ -50,7 +50,7 @@ describe UpdateAptcCredits, dbclean: :after_each do
       
       expect(credit.pre_amt_tot).to eq 765.to_d
       expect(credit.tot_res_amt).to eq 23.to_d
-      expect(credit.end_on).to eq Date.parse("7/2//2018")
+      expect(credit.end_on).to eq Date.parse("7/2/2018")
 
     end
 
@@ -68,7 +68,7 @@ describe UpdateAptcCredits, dbclean: :after_each do
       
       expect(credit.pre_amt_tot).to eq 200.to_d
       expect(credit.tot_res_amt).to eq 100.to_d
-      expect(credit.end_on).to eq Date.parse("8/2/  2018")
+      expect(credit.end_on).to eq Date.parse("8/2/2018")
       expect(credit.start_on).to eq Date.parse("1/2/2018")
 
     end
