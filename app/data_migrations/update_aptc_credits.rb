@@ -3,13 +3,23 @@ require File.join(Rails.root, "lib/mongoid_migration_task")
 class UpdateAptcCredits < MongoidMigrationTask
 
   def migrate 
+
+
+    if Policy.where(eg_id: ENV['policy_id']).first.present? && ENV['eg_id'].blank?
+      raise "The policy ID you supplied is also an enrollment group ID. Please double-check that your policy ID is not an enrollment group ID."
+    end
+
+    if ENV['policy_id'].present?
+      policy = Policy.find(ENV['policy_id'])
+    else
+      policy = Policy.where(eg_id: ENV['eg_id']).first
+    end
     
     start_on = ENV['start_on']
     end_on = ENV['end_on']  
     pre_amt_tot = ENV['pre_amt_tot']
     tot_res_amt = ENV['tot_res_amt'] 
     aptc = ENV['aptc']
-    policy = Policy.where(eg_id: ENV['eg_id']).first
     
     unless policy.present?
       raise  "Could not find a policy with the id #{ENV['eg_id']}"
