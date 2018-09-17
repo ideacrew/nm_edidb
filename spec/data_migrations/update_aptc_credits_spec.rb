@@ -1,7 +1,3 @@
-
-
-
-
 require "rails_helper"
 require File.join(Rails.root,"app","data_migrations","update_aptc_credits.rb")
 
@@ -27,8 +23,6 @@ describe UpdateAptcCredits, dbclean: :after_each do
       allow(ENV).to receive(:[]).with("tot_res_amt").and_return("23")
       allow(ENV).to receive(:[]).with("pre_amt_tot").and_return("765")
       allow(ENV).to receive(:[]).with("aptc").and_return("889")
-    
-      policy.aptc_credits.create!(start_on:"4/2/2018", end_on:"6/2/2018", pre_amt_tot:"123", tot_res_amt:"245", aptc:"67") 
     end
 
     it 'updates aptc credits with matching start and end dates' do  
@@ -36,58 +30,53 @@ describe UpdateAptcCredits, dbclean: :after_each do
       policy.reload
       credit.reload
       
-      expect(credit.pre_amt_tot).to eq 765.to_d
-      expect(credit.tot_res_amt).to eq 23.to_d
+      expect(credit.pre_amt_tot).to eq 765
+      expect(credit.tot_res_amt).to eq 23
     end
 
     it 'updates aptc credits with matching start and end dates and finds by policy id' do 
       allow(ENV).to receive(:[]).with("policy_id").and_return(policy.id)
 
-
       subject.migrate
       policy.reload
       credit.reload
       
-      expect(credit.pre_amt_tot).to eq 765.to_d
-      expect(credit.tot_res_amt).to eq 23.to_d
+      expect(credit.pre_amt_tot).to eq 765
+      expect(credit.tot_res_amt).to eq 23
     end
 
     it 'finds and updates the end date on a credit with no mathcing end day' do 
       allow(ENV).to receive(:[]).with("end_on").and_return("7/2/2018")
 
-      policy.aptc_credits.create!(start_on:"2/2/2018", end_on:"7/2/2018", pre_amt_tot:"12", tot_res_amt:"245", aptc:"67")
       subject.migrate
       policy.reload
       credit.reload
       
-      expect(credit.pre_amt_tot).to eq 765.to_d
-      expect(credit.tot_res_amt).to eq 23.to_d
+      expect(credit.pre_amt_tot).to eq 765
+      expect(credit.tot_res_amt).to eq 23
       expect(credit.end_on).to eq Date.parse("7/2/2018")
-
     end
 
-    it 'finds and updates the end date on a credit with no mathcing end day' do 
+    it 'finds and updates the end date on a credit with no matching end day' do 
       allow(ENV).to receive(:[]).with("end_on").and_return("8/2/2018")
-      allow(ENV).to receive(:[]).with("start_on").and_return("1/2/2018")
+      allow(ENV).to receive(:[]).with("start_on").and_return("4/2/2018")
       allow(ENV).to receive(:[]).with("tot_res_amt").and_return("100")
       allow(ENV).to receive(:[]).with("pre_amt_tot").and_return("200")
       allow(ENV).to receive(:[]).with("aptc").and_return("300")
 
       subject.migrate
       policy.reload
+      credit.reload
 
-      credit= policy.aptc_credits.where(start_on: Date.parse("1/2/2018")).first
-      
-      expect(credit.pre_amt_tot).to eq 200.to_d
-      expect(credit.tot_res_amt).to eq 100.to_d
+      expect(credit.pre_amt_tot).to eq 200
+      expect(credit.tot_res_amt).to eq 100
       expect(credit.end_on).to eq Date.parse("8/2/2018")
-      expect(credit.start_on).to eq Date.parse("1/2/2018")
-
+      expect(credit.start_on).to eq Date.parse("4/2/2018")
     end
   end
 
   describe 'updates aptc credits with matching start and end dates and finds by policy id' do 
-      it "finds policy by id" do 
+      it "updates aptc credits with matching start and end dates and finds by policy id'" do 
       allow(ENV).to receive(:[]).with("policy_id").and_return(policy.id)
       allow(ENV).to receive(:[]).with("end_on").and_return("5/2/2018")
       allow(ENV).to receive(:[]).with("start_on").and_return("4/2/2018")
@@ -95,13 +84,12 @@ describe UpdateAptcCredits, dbclean: :after_each do
       allow(ENV).to receive(:[]).with("pre_amt_tot").and_return("200")
       allow(ENV).to receive(:[]).with("aptc").and_return("300")
 
-
       subject.migrate
       policy.reload
       credit.reload
 
-      expect(credit.pre_amt_tot).to eq 200.to_d
-      expect(credit.tot_res_amt).to eq 100.to_d
+      expect(credit.pre_amt_tot).to eq 200
+      expect(credit.tot_res_amt).to eq 100
     end
   end
 end
