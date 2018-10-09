@@ -4,53 +4,36 @@ class UpdateAptcCredits < MongoidMigrationTask
 
   def migrate 
 
-    if Policy.where(eg_id: ENV['policy_id']).first.present? && ENV['eg_id'].blank?
-      puts "The policy ID you supplied is also an enrollment group ID. Please double-check that your policy ID is not an enrollment group ID." unless Rails.env.test?
-    end
-
-    if ENV['policy_id'].present?
-      policy = Policy.find(ENV['policy_id'])
-    else
-      policy = Policy.where(eg_id: ENV['eg_id']).first
-    end
-    
+    policy = Policy.find(ENV['policy_id'])
     start_on = ENV['start_on']
-    pre_amt_tot = ENV['pre_amt_tot']
-    tot_res_amt = ENV['tot_res_amt'] 
     aptc = ENV['aptc']
-    
-    if ENV['end_on'] != nil
-      end_on = Date.parse(ENV['end_on'])  
-    else
-      end_on = nil
-    end
-    
+    end_on = ENV['end_on']
+      
     unless policy.present?
       puts  "Could not find a policy with the id #{ENV['eg_id']}" unless Rails.env.test?
     end
 
     credit = policy.aptc_credits.where(start_on: start_on).first 
     if credit && credit.end_on == end_on
-      update_credit_amounts(credit,pre_amt_tot, tot_res_amt, aptc)
+      credit.update_attributes!(aptc: aptc) 
+      calculate_amounts(credit, policy)
       puts "APTC credit has been updated to pre_amt_tot: #{credit.pre_amt_tot}, tot_res_amt #{credit.tot_res_amt}, aptc amount: #{credit.aptc}" unless Rails.env.test?
     elsif credit && end_on != credit.end_on 
-      update_credit_amounts(credit,pre_amt_tot, tot_res_amt, aptc)
-      credit.update_attributes!(end_on: end_on) if end_on.class == Date
+      credit.update_attributes!(aptc: aptc, end_on: end_on) 
+      calculate_amounts(credit, policy)
       puts "APTC credit has been updated to pre_amt_tot: #{credit.pre_amt_tot}, tot_res_amt #{credit.tot_res_amt}, aptc amount: #{credit.aptc}, end_on: #{credit.end_on}" unless Rails.env.test?
     else
-      credit = policy.aptc_credits.create!(start_on: start_on, end_on: end_on, pre_amt_tot: pre_amt_tot,tot_res_amt:tot_res_amt, aptc: aptc)
+      credit = policy.aptc_credits.create!(start_on: start_on, end_on: end_on, pre_amt_tot: policy.pre_amt_tot, tot_res_amt: policy.tot_res_amt, aptc: policy.applied_aptc) if credit.nil?
+      credit.update_attributes!(aptc: aptc) 
+      calculate_amounts(credit, policy)
       puts "New aptc credit has been created for policy #{policy.eg_id} with pre_amt_tot: #{credit.pre_amt_tot}, tot_res_amt #{credit.tot_res_amt}, aptc amount: #{credit.aptc}  start_on: #{credit.start_on}, end_on: #{credit.end_on}" unless Rails.env.test?
     end
   end
 
-  def is_number?(string)
-    true if Float(string) rescue false
+  def calculate_amounts(credit, policy)
+    credit.tot_res_amt = credit.pre_amt_tot - credit.aptc
+    policy.save!
+    policy.tot_res_amt = credit.tot_res_amt
+    policy.pre_amt_tot = credit.pre_amt_tot
   end
-
-  def update_credit_amounts(credit, pre_amt_tot, tot_res_amt,aptc)
-    credit.update_attributes!(pre_amt_tot: pre_amt_tot) if is_number?(pre_amt_tot)
-    credit.update_attributes!(tot_res_amt: tot_res_amt) if is_number?(tot_res_amt)
-    credit.update_attributes!(aptc: aptc) if is_number?(aptc)
-  end
-
 end
