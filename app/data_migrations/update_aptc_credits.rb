@@ -15,22 +15,27 @@ class UpdateAptcCredits < MongoidMigrationTask
     end
     
     start_on = ENV['start_on']
-    end_on = ENV['end_on']  
     pre_amt_tot = ENV['pre_amt_tot']
     tot_res_amt = ENV['tot_res_amt'] 
     aptc = ENV['aptc']
+    
+    if ENV['end_on'] != ""
+      end_on = Date.parse(ENV['end_on'])  
+    else
+      end_on = ""
+    end
     
     unless policy.present?
       puts  "Could not find a policy with the id #{ENV['eg_id']}" unless Rails.env.test?
     end
 
     credit = policy.aptc_credits.where(start_on: start_on).first 
-    if credit && credit.end_on == Date.parse(end_on)
+    if credit && credit.end_on == end_on
       update_credit_amounts(credit,pre_amt_tot, tot_res_amt, aptc)
       puts "APTC credit has been updated to pre_amt_tot: #{credit.pre_amt_tot}, tot_res_amt #{credit.tot_res_amt}, aptc amount: #{credit.aptc}" unless Rails.env.test?
-    elsif credit && Date.parse(end_on) != credit.end_on 
+    elsif credit && end_on != credit.end_on 
       update_credit_amounts(credit,pre_amt_tot, tot_res_amt, aptc)
-      credit.update_attributes!(end_on: end_on)
+      credit.update_attributes!(end_on: end_on) if end_on.class == Date
       puts "APTC credit has been updated to pre_amt_tot: #{credit.pre_amt_tot}, tot_res_amt #{credit.tot_res_amt}, aptc amount: #{credit.aptc}, end_on: #{credit.end_on}" unless Rails.env.test?
     else
       credit = policy.aptc_credits.create!(start_on: start_on, end_on: end_on, pre_amt_tot: pre_amt_tot,tot_res_amt:tot_res_amt, aptc: aptc)

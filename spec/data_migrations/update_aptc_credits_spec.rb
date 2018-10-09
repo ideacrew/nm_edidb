@@ -78,7 +78,7 @@ describe UpdateAptcCredits, dbclean: :after_each do
   describe 'updates aptc credits with matching start and end dates and finds by policy id' do 
       it "updates aptc credits with matching start and end dates and finds by policy id'" do 
       allow(ENV).to receive(:[]).with("policy_id").and_return(policy.id)
-      allow(ENV).to receive(:[]).with("end_on").and_return("5/2/2018")
+      allow(ENV).to receive(:[]).with("end_on").and_return("")
       allow(ENV).to receive(:[]).with("start_on").and_return("4/2/2018")
       allow(ENV).to receive(:[]).with("tot_res_amt").and_return("100")
       allow(ENV).to receive(:[]).with("pre_amt_tot").and_return("200")
