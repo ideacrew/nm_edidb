@@ -19,10 +19,10 @@ class UpdateAptcCredits < MongoidMigrationTask
     tot_res_amt = ENV['tot_res_amt'] 
     aptc = ENV['aptc']
     
-    if ENV['end_on'] != ""
+    if ENV['end_on'] != nil
       end_on = Date.parse(ENV['end_on'])  
     else
-      end_on = ""
+      end_on = nil
     end
     
     unless policy.present?
