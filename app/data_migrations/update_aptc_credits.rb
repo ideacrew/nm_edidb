@@ -35,5 +35,6 @@ class UpdateAptcCredits < MongoidMigrationTask
     policy.save!
     policy.tot_res_amt = credit.tot_res_amt
     policy.pre_amt_tot = credit.pre_amt_tot
+    policy.save!
   end
 end
