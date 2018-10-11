@@ -15,8 +15,7 @@ describe UpdateAptcCredits, dbclean: :after_each do
 
   describe "changing the end dates for a policy" do 
     before(:each) do 
-      allow(ENV).to receive(:[]).with("policy_id").and_return("")
-      allow(ENV).to receive(:[]).with("eg_id").and_return(policy.eg_id)
+      allow(ENV).to receive(:[]).with("policy_id").and_return("1")
       allow(ENV).to receive(:[]).with("start_on").and_return("4/2/2018")
       allow(ENV).to receive(:[]).with("end_on").and_return("6/2/2018")
       allow(ENV).to receive(:[]).with("aptc").and_return("100")
