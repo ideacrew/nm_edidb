@@ -24,7 +24,7 @@ module EnrollmentAction
         return false
       end
       #cobra_reinstate = true
-      ep = ExternalEvents::ExternalPolicy.new(action.policy_cv, action.existing_plan, true)
+      ep = ExternalEvents::ExternalPolicy.new(action.policy_cv, action.existing_plan, true, market_from_payload: action.kind)
       return false unless ep.persist
       policy_to_term = termination.existing_policy
       policy_to_term.terminate_as_of(termination.subscriber_end)

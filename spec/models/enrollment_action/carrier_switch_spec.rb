@@ -64,9 +64,10 @@ describe EnrollmentAction::CarrierSwitch, "given a qualified enrollment set, bei
     allow(ExternalEvents::ExternalMember).to receive(:new).with(member_new).and_return(new_db_record)
 
     allow(policy).to receive(:save!).and_return(true)
-    allow(ExternalEvents::ExternalPolicy).to receive(:new).with(new_policy_cv, plan, false).and_return(policy_updater)
+    allow(ExternalEvents::ExternalPolicy).to receive(:new).with(new_policy_cv, plan, false, market_from_payload: subject.action).and_return(policy_updater)
     allow(policy_updater).to receive(:persist).and_return(true)
     allow(subject.action).to receive(:existing_policy).and_return(false)
+    allow(subject.action).to receive(:kind).and_return(action_event)
   end
 
   it "successfully creates the new policy" do

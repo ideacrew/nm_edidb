@@ -2,15 +2,19 @@ module ExternalEvents
   class ExternalPolicy
     attr_reader :policy_node
     attr_reader :plan
+    attr_reader :kind
 
     include Handlers::EnrollmentEventXmlHelper
 
     # p_node : Openhbx::Cv2::Policy
     # p_record : Plan
-    def initialize(p_node, p_record, cobra_reinstate = false)
+    # optional parsing options to pass in additional parsed parameters to populate fields of policy
+    # upon creation and persistance.
+    def initialize(p_node, p_record, cobra_reinstate = false, **parsing_options)
       @policy_node = p_node
       @plan = p_record
       @cobra = cobra_reinstate
+      @kind = parsing_options[:market_from_payload]
     end
 
     def extract_pre_amt_tot
@@ -173,7 +177,7 @@ module ExternalEvents
 
     def build_responsible_party(responsible_person)
       if responsible_person_exists?
-        responsible_person.responsible_parties << ResponsibleParty.new({:entity_identifier => "responsible party" }) 
+        responsible_person.responsible_parties << ResponsibleParty.new({:entity_identifier => "responsible party" })
         responsible_person.responsible_parties.first
       end
     end
@@ -222,6 +226,7 @@ module ExternalEvents
         :eg_id => extract_enrollment_group_id(@policy_node),
         :pre_amt_tot => extract_pre_amt_tot,
         :tot_res_amt => extract_tot_res_amt,
+        :kind => @kind,
         :cobra_eligibility_date => @cobra ? extract_cobra_eligibility_date : nil
       }.merge(extract_other_financials).merge(extract_rating_details).merge(responsible_party_attributes))
 

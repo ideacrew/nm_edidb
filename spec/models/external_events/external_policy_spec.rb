@@ -138,3 +138,55 @@ describe ExternalEvents::ExternalPolicy, "given:
     end
   end
 end
+
+describe ExternalEvents::ExternalPolicy, "with a parsed market value param in the constructor", dbclean: :after_each  do
+  let(:policy_cv) { instance_double(Openhbx::Cv2::Policy, :policy_enrollment => policy_enrollment, :enrollees =>[enrollees1, enrollees2]) }
+  let!(:plan) {FactoryGirl.create(:plan, carrier_id:'01') }
+  let(:applied_aptc) { {:applied_aptc =>'0.0'} }
+  let!(:responsible_party) { ResponsibleParty.new(entity_identifier: "responsible party") }
+  let!(:person) { FactoryGirl.create(:person,responsible_parties:[responsible_party])}
+  let(:responsible_party_node) { instance_double(::Openhbx::Cv2::ResponsibleParty) }
+  let!(:policy_enrollment) { instance_double(Openhbx::Cv2::PolicyEnrollment) }
+  let(:enrollees1) { instance_double(Openhbx::Cv2::Enrollee, subscriber?: true, member: member1)}
+  let(:member1) { instance_double(Openhbx::Cv2::EnrolleeMember, :id => subscriber_xml_id, :person_relationships => []) }
+  let(:subscriber_xml_id) { "urn:whaTEVER#subscriber_id" }
+  let(:dependent_xml_id) { "urn:whaTEVER#dependent_id" }
+  let(:enrollees2) { instance_double(Openhbx::Cv2::Enrollee, subscriber?: false, member: member2)}
+  let(:member2) { instance_double(Openhbx::Cv2::EnrolleeMember, :id => dependent_xml_id, :person_relationships => [relationship]) }
+  let(:relationship) do
+    instance_double(Openhbx::Cv2::PersonRelationship,
+      subject_individual: dependent_xml_id,
+      object_individual: subscriber_xml_id,
+      relationship_uri: dependent_relationship_uri
+    )
+  end
+  let(:dependent_relationship_uri) { "urn:openhbx:terms:v1:individual_relationship#spouse" }
+
+  subject { ExternalEvents::ExternalPolicy.new(policy_cv, plan, false, market_from_payload: "coverall") }
+
+    before :each do
+      allow(subject).to receive(:policy_exists?).and_return(false)
+      allow(subject).to receive(:responsible_party_exists?).and_return(true)
+      allow(subject).to receive(:existing_responsible_party).and_return(responsible_party)
+      allow(subject).to receive(:extract_enrollment_group_id).with(policy_cv).and_return('rspec-eg-id')
+      allow(subject).to receive(:extract_pre_amt_tot).and_return("0.0")
+      allow(subject).to receive(:extract_tot_res_amt).and_return("0.0")
+      allow(subject).to receive(:extract_other_financials).and_return(applied_aptc)
+      allow(subject).to receive(:extract_rating_details).and_return({})
+      allow(subject).to receive(:extract_enrollee_start).with(enrollees1).and_return(Date.today)
+      allow(subject).to receive(:extract_enrollee_premium).with(enrollees1).and_return("100")
+      allow(subject).to receive(:extract_enrollee_start).with(enrollees2).and_return(Date.today)
+      allow(subject).to receive(:extract_enrollee_premium).with(enrollees2).and_return("100")
+      allow(policy_cv).to receive(:responsible_party).and_return(responsible_party_node)
+      subject.instance_variable_set(:@plan,plan)
+    end
+
+    it "should populate the policy with the market being passed in the initalize method" do
+      expect(subject.kind).to eq("coverall")
+    end
+
+    it "should create a new policy with the designated market kind" do
+      subject.persist
+      expect(Policy.where(:kind => "coverall").size).to eq(1)
+    end
+end

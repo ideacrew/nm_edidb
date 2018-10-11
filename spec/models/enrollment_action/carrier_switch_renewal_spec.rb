@@ -62,11 +62,12 @@ describe EnrollmentAction::CarrierSwitchRenewal, "given a qualified enrollment s
     allow(ExternalEvents::ExternalMember).to receive(:new).with(member_primary).and_return(primary_db_record)
     allow(ExternalEvents::ExternalMember).to receive(:new).with(member_secondary).and_return(secondary_db_record)
 
-    allow(ExternalEvents::ExternalPolicy).to receive(:new).with(new_policy_cv, plan, false).and_return(policy_updater)
+    allow(ExternalEvents::ExternalPolicy).to receive(:new).with(new_policy_cv, plan, false, market_from_payload: subject.action).and_return(policy_updater)
     allow(policy_updater).to receive(:persist).and_return(true)
     allow(EnrollmentAction::CarrierSwitchRenewal).to receive(:other_carrier_renewal_candidates).with(action_event).and_return([other_carrier_term_candidate])
     allow(other_carrier_term_candidate).to receive(:terminate_as_of).with(subscriber_end).and_return(true)
     allow(subject.action).to receive(:existing_policy).and_return(false)
+    allow(subject.action).to receive(:kind).and_return(action_event)
   end
 
   it "successfully creates the new policy" do
@@ -75,11 +76,11 @@ describe EnrollmentAction::CarrierSwitchRenewal, "given a qualified enrollment s
 
   it "terminates the old carrier policy" do
     expect(other_carrier_term_candidate).to receive(:terminate_as_of).with(subscriber_end).and_return(true)
-    subject.persist 
+    subject.persist
   end
 
   it "assigns the termination information" do
-    subject.persist 
+    subject.persist
     expect(subject.terminated_policy_information).to eq [[other_carrier_term_candidate, [1,2]]]
   end
 end
