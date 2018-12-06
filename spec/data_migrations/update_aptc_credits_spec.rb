@@ -5,6 +5,8 @@ describe UpdateAptcCredits, dbclean: :after_each do
   let(:given_task_name) { "update_aptc_credits" }
   let(:policy) { FactoryGirl.create(:policy, applied_aptc:"550", pre_amt_tot:"650",tot_res_amt:"750") }
   let!(:credit) {policy.aptc_credits.create!(start_on:"4/2/2018", end_on:"7/2/2018", pre_amt_tot:"200", tot_res_amt:"100", aptc:"100")}
+  let!(:credit_2) {policy.aptc_credits.create!(start_on:"2/2/2018", end_on:"4/1/2018", pre_amt_tot:"200", tot_res_amt:"100", aptc:"200")}
+  
   subject { UpdateAptcCredits.new(given_task_name, double(:current_scope => nil)) }
 
   describe "given a task name" do 
@@ -19,6 +21,9 @@ describe UpdateAptcCredits, dbclean: :after_each do
       allow(ENV).to receive(:[]).with("start_on").and_return("4/2/2018")
       allow(ENV).to receive(:[]).with("end_on").and_return("6/2/2018")
       allow(ENV).to receive(:[]).with("aptc").and_return("100")
+      allow(ENV).to receive(:[]).with("delete_credit").and_return(nil)
+ 
+
       policy.enrollees.each{|er| er.update_attributes!(coverage_end:nil)  }
     end
 
@@ -54,6 +59,18 @@ describe UpdateAptcCredits, dbclean: :after_each do
       expect(credit.end_on).to eq Date.new(2018,7,2)
     end
 
+    it 'finds a matching aptc credit and deletes it' do 
+      expect(policy.aptc_credits.count).to eq 2
+
+      allow(ENV).to receive(:[]).with("delete_credit").and_return("true")
+
+      subject.migrate
+      policy.reload
+
+      expect(policy.aptc_credits.count).to eq 1
+    end
+
+
     it 'finds and updates the end date on a credit with no matching end day' do 
       allow(ENV).to receive(:[]).with("end_on").and_return("5/2/2018")
       allow(ENV).to receive(:[]).with("start_on").and_return("4/2/2018")
@@ -77,6 +94,8 @@ describe UpdateAptcCredits, dbclean: :after_each do
       allow(ENV).to receive(:[]).with("end_on").and_return("2/1/2018")
       allow(ENV).to receive(:[]).with("start_on").and_return("4/2/2018")
       allow(ENV).to receive(:[]).with("aptc").and_return("50")
+      allow(ENV).to receive(:[]).with("delete_credit").and_return(nil)
+
       policy.enrollees.each{|er| er.update_attributes!(coverage_end:nil)  }
 
 
