@@ -1,19 +1,30 @@
 require File.join(Rails.root, "lib/mongoid_migration_task")
-
 class UpdateAptcCredits < MongoidMigrationTask
 
-  def migrate 
+  def migrate   
 
     policy = Policy.find(ENV['policy_id'])
     start_on = ENV['start_on']
     aptc = ENV['aptc']
     end_on = ENV['end_on']
-      
+    
     unless policy.present?
       puts  "Could not find a policy with the id #{ENV['eg_id']}" unless Rails.env.test?
     end
-
+    
     credit = policy.aptc_credits.where(start_on: start_on).first 
+
+    if ENV['delete_credit'] == "true"
+      if credit.present?
+        credit.destroy
+        policy.save!
+        puts "Credit deleted" unless Rails.env.test?
+        return
+      else 
+        puts "Could not find that credit to delete" unless Rails.env.test?
+      end
+    end
+
     if credit && credit.end_on == end_on
       credit.update_attributes!(aptc: aptc) 
       calculate_amounts(credit, policy)
