@@ -56,10 +56,12 @@ class MergeDuplicatePeople < MongoidMigrationTask
   end
 
   def migrate
-    move_and_delete_members(ENV['person_to_keep'],ENV['person_to_remove'])
-    unset_authority_member_id(ENV['person_to_remove'])
-    merge_addresses(ENV['person_to_keep'],ENV['person_to_remove'])
-    merge_phones(ENV['person_to_keep'],ENV['person_to_remove'])
-    merge_emails(ENV['person_to_keep'],ENV['person_to_remove'])
+    ENV['persons_to_remove'].split(",").each do |person_to_remove|
+      move_and_delete_members(ENV['person_to_keep'],person_to_remove)
+      unset_authority_member_id(person_to_remove)
+      merge_addresses(ENV['person_to_keep'],person_to_remove)
+      merge_phones(ENV['person_to_keep'],person_to_remove)
+      merge_emails(ENV['person_to_keep'],person_to_remove)
+    end
   end
 end
