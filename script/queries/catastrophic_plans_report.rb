@@ -2,14 +2,14 @@ require 'csv'
 
 header_row = ["Glue_Policy_ID", "Enrollment_Group_ID", "Subscriber_First_Name", "Subscriber_Last_Name", "Subscriber_HBX_ID", "Authority_Member_Policy?", "Metal_Level", "Carrier", "HIOS_ID", "State", "Coverage_Start", "Coverage_End", "Premium_Amount_Total", "APTC"]
 
-CSV.open("catastrophic_plans_report_for_2017.csv","w") do |csv|
+CSV.open("catastrophic_plans_report_for_2018.csv","w") do |csv|
   csv << header_row
-  start_date = Date.new(2017, 01, 01)
-  end_date = Date.new(2017, 12, 31)
+  start_date = Date.new(2018, 01, 01)
+  end_date = Date.new(2018, 12, 31)
   catastrophic_plan_ids = Plan.where(metal_level: "catastrophic").map(&:id)
   policies = Policy.where(:"plan_id".in => catastrophic_plan_ids, :"enrollees.coverage_start" => { "$gte" => start_date, "$lte" => end_date} )
   policies.each do |policy|
-    next if !(policy.subscriber.coverage_start.year == 2017)
+    next if !(policy.subscriber.coverage_start.year == 2018)
     begin
       csv << [
         policy.id,
