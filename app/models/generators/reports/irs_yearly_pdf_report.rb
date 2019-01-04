@@ -316,7 +316,6 @@ module Generators::Reports
       end
       move_down(11)
       y_pos = cursor
-      y_pos = (y_pos - 10) if (@calender_year == 2018)
       bounding_box([col1, y_pos], :width => 100) do
         text @notice.recipient.coverage_start_date unless @void
       end
