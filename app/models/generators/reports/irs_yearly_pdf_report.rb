@@ -21,7 +21,7 @@ module Generators::Reports
 
       template_name = if ([2016, 2017, 2018].include?(options[:calender_year]) && options[:notice_type] != 'void')
         settings[:tax_document][options[:calender_year]][notice_type][:template][options[:qhp_type]]
-      elsif options[:calender_year] == (2017 || 2018) && options[:notice_type] == 'void'
+      elsif ([2017, 2018].include?(options[:calender_year]) && options[:notice_type] == 'void')
         settings[:tax_document][options[:calender_year]][notice_type][:template][options[:void_type]]
       else
         settings[:tax_document][options[:calender_year]][notice_type][:template]
