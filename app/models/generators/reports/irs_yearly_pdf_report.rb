@@ -182,7 +182,7 @@ module Generators::Reports
 
       if @void_2018
         canceled_policies = @notice.canceled_policies.split(',')
-        print_policies(canceled_policies, 18, 330+padding)
+        print_policies(canceled_policies, 18, 340+padding)
         if @notice.active_policies.present?
           active_policies = @notice.active_policies.split(',')
           print_policies(active_policies, 18, 130+padding)
