@@ -45,3 +45,15 @@ tax_document:
   documents_root_path: '/tmp/'
   documents_folder: 'irs_notices' 
 
+  2018:
+    slcsp: "86052DC0400001-01"
+    new:
+      template:
+        unassisted: "2018-1095A-NEW-UQHP.pdf"
+        assisted: "2018-1095A-NEW-AQHP.pdf"
+    void:
+      template:
+        active_false: "2018-1095A-VOID-ACTIVE-FALSE.pdf"
+        active_true: "2018-1095A-VOID-ACTIVE-TRUE.pdf"
+    coverage_page_no: 3
+
