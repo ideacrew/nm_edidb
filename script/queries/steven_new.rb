@@ -59,9 +59,8 @@ Caches::MongoidCache.with_cache_for(Carrier, Plan, Employer) do
             }
             employer = nil
             if !pol.employer_id.blank?
-            employer = Caches::MongoidCache.lookup(Employer, pol.employer_id) {
-              pol.employer
-            }
+            employer =      pol.employer
+            
             end
             if !pol.broker.blank?
               broker = pol.broker.full_name

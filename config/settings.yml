@@ -1,6 +1,6 @@
 site:
-  short_name: "DC HealthLink"
-  long_name: "DC HealthLink Glue DB"
+  short_name: "OPM Glue DB"
+  long_name: "OPM Glue DB"
   copyright_period_start: "2014"
 
   
@@ -8,7 +8,7 @@ site:
     facebook_url: ""
 
 contact_center:
-  name: "Department of Human Services"
+  name: "Office of Personnel Management"
   address: "P.O. Box 91560"
   city: "Washington"
   state_abbreviation: "DC"

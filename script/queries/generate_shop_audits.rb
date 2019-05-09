@@ -87,7 +87,7 @@ eligible_pols.each do |pol|
       end
       subscriber_id = pol.subscriber.m_id
       subscriber_member = m_cache.lookup(subscriber_id)
-      auth_subscriber_id = subscriber_member.person.authority_member_id
+      auth_subscriber_id = subscriber_member.person.authority_member_id || nil
       if auth_subscriber_id == subscriber_id
         enrollee_list = pol.enrollees.reject { |en| en.canceled? }
         all_ids = enrollee_list.map(&:m_id) | [subscriber_id]
